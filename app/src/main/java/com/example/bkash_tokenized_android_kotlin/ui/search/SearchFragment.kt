@@ -1,6 +1,5 @@
 package com.example.bkash_tokenized_android_kotlin.ui.search
 
-import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
@@ -10,29 +9,20 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.bkash_tokenized_android_kotlin.Constants
+import com.example.bkash_tokenized_android_kotlin.Constants.searchTextInput
 import com.example.bkash_tokenized_android_kotlin.R
-import com.example.bkash_tokenized_android_kotlin.bkash.api.ApiInterface
-import com.example.bkash_tokenized_android_kotlin.bkash.api.BkashApiClient
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentSearchBinding
-import com.example.bkash_tokenized_android_kotlin.ui.home.HomeFragment
-import com.example.bkash_tokenized_rnd.bkash.model.GrantTokenBodyRequest
-import com.example.bkash_tokenized_rnd.bkash.model.GrantTokenResponse
-import com.example.bkash_tokenized_rnd.bkash.model.SearchTransactionBodyRequest
-import com.example.bkash_tokenized_rnd.bkash.model.SearchTransactionResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.bkash_tokenized_android_kotlin.ui.home.HomeViewModel
 
 class SearchFragment : Fragment() {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
+    private val viewModel by viewModels<HomeViewModel>()
+    private val searchViewModel by viewModels<SearchViewModel>()
     private var pd: ProgressDialog?= null
-
-    companion object {
-        var searchTextInput = ""
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,71 +52,48 @@ class SearchFragment : Fragment() {
     }
 
     private fun grantBkashToken() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<GrantTokenResponse> = apiService.postGrantToken(
-            username = Constants.bkashSandboxUsername,
-            password = Constants.bkashSandboxPassword,
-            GrantTokenBodyRequest(
-                appKey = Constants.bkashSandboxAppKey,
-                appSecret = Constants.bkashSandboxAppSecret
-            )
-        )
-        call.enqueue(object : Callback<GrantTokenResponse> {
-            override fun onResponse(call: Call<GrantTokenResponse>, response: Response<GrantTokenResponse>) {
-                if (response.isSuccessful) {
-                    if (response.body()?.statusCode == "0000"){
-                        Constants.sessionIdToken = response.body()?.idToken.toString()
-                        searchBkashTransaction()
-                    }
-                    else{
-                        Toast.makeText(requireContext(), response.body()?.statusMessage, Toast.LENGTH_SHORT).show()
-                        pd!!.dismiss()
-                    }
+        viewModel.getGrantTokenObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                Constants.sessionIdToken = it.idToken.toString()
+                if (it.statusCode != "0000") {
+                    pd!!.dismiss()
+                    Toast.makeText(activity, it.statusMessage, Toast.LENGTH_SHORT).show()
                 }
+                searchBkashTransaction()
+                pd!!.dismiss()
             }
-
-            override fun onFailure(call: Call<GrantTokenResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
+                pd!!.dismiss()
             }
-        })
+        }
+        viewModel.grantTokenApiCall()
     }
 
-
     private fun searchBkashTransaction() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<SearchTransactionResponse> = apiService.postSearchTransaction(
-            authorization = "Bearer ${Constants.sessionIdToken}",
-            xAppKey = Constants.bkashSandboxAppKey,
-            SearchTransactionBodyRequest(
-                trxID = searchTextInput
-            )
-        )
-        call.enqueue(object : Callback<SearchTransactionResponse> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(call: Call<SearchTransactionResponse>, response: Response<SearchTransactionResponse>) {
-                if (response.isSuccessful) {
-                    if (response.body()?.statusCode == "0000"){
+        searchViewModel.getSearchPaymentObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                if (it.statusCode == "0000"){
                         pd!!.dismiss()
-                        binding.statusMessageSearch.text = response.body()?.statusMessage
-                        binding.trxIDSearch.text = "trxID: ${response.body()?.trxID}"
-                        binding.transactionStatusSearch.text = "Transaction Status: ${response.body()?.transactionStatus}"
-                        binding.transactionTypeSearch.text = "Transaction Type:\n ${response.body()?.transactionType}"
-                        binding.amountSearch.text = "Amount: ${response.body()?.amount}"
-                        binding.customerMsisdnSearch.text = "Customer Msisdn: ${response.body()?.customerMsisdn}"
-                        binding.initiationTimeSearch.text = "Initiation Time:\n ${response.body()?.initiationTime}"
-                        binding.completedTimeSearch.text = "Completed Time:\n ${response.body()?.completedTime}"
+                        binding.statusMessageSearch.text = it.statusMessage
+                        binding.trxIDSearch.text = "trxID: ${it.trxID}"
+                        binding.transactionStatusSearch.text = "Transaction Status: ${it.transactionStatus}"
+                        binding.transactionTypeSearch.text = "Transaction Type:\n ${it.transactionType}"
+                        binding.amountSearch.text = "Amount: ${it.amount}"
+                        binding.customerMsisdnSearch.text = "Customer Msisdn: ${it.customerMsisdn}"
+                        binding.initiationTimeSearch.text = "Initiation Time:\n ${it.initiationTime}"
+                        binding.completedTimeSearch.text = "Completed Time:\n ${it.completedTime}"
                     }
                     else{
                         pd!!.dismiss()
-                        binding.statusMessageSearch.text = response.body()?.statusMessage
+                        binding.statusMessageSearch.text = it.statusMessage
                     }
-                }
             }
-
-            override fun onFailure(call: Call<SearchTransactionResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+        searchViewModel.searchPaymentApiCall()
     }
 
     private fun hideKeyboard(){

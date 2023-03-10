@@ -3,13 +3,13 @@ package com.example.bkash_tokenized_android_kotlin
 import androidx.lifecycle.MutableLiveData
 
 object Constants {
-    var bkashSandboxUsername = "your_sandbox_user_name"
-    var bkashSandboxPassword = "your_sandbox_password_name"
-    var bkashSandboxAppKey = "your_sandbox_app_key"
-    var bkashSandboxAppSecret = "your_sandbox_app_secret"
+    var bkashSandboxUsername = "your sandbox user name"
+    var bkashSandboxPassword = "your sandbox password name"
+    var bkashSandboxAppKey = "your sandbox app key"
+    var bkashSandboxAppSecret = "your sandbox app secret"
     var mode = "0011"
     var payerReference = "01770618575"
-    var callbackURL = "your_callback_yourDomain.com"
+    var callbackURL = "your callback yourDomain.com"
     var merchantAssociationInfo = ""
     var amount = "30"
     var currency = "BDT"
@@ -18,5 +18,6 @@ object Constants {
 
     var sessionIdToken = ""
     var paymentIDBkash = ""
+    var searchTextInput = ""
     val liveData = MutableLiveData<Boolean>()
 }

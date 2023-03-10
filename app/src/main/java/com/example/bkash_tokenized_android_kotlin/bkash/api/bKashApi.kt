@@ -1,44 +1,43 @@
 package com.example.bkash_tokenized_android_kotlin.bkash.api
 
-import com.example.bkash_tokenized_android_kotlin.bkash.model.CreatePaymentBodyRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.*
 import com.example.bkash_tokenized_rnd.bkash.model.*
-import retrofit2.Call
 import retrofit2.http.*
 
 
 interface ApiInterface {
     @POST("/v1.2.0-beta/tokenized/checkout/token/grant")
-    fun postGrantToken(
+    suspend fun postGrantToken(
         @Header("username") username: String?,
         @Header("password") password: String?,
         @Body grantTokenBodyRequest: GrantTokenBodyRequest
-    ): Call<GrantTokenResponse>
+    ): GrantTokenResponse
 
     @POST("/v1.2.0-beta/tokenized/checkout/create")
-    fun postPaymentCreate(
+    suspend fun postPaymentCreate(
         @Header("authorization") authorization: String?,
         @Header("x-app-key") xAppKey: String?,
         @Body createPaymentBody: CreatePaymentBodyRequest
-    ): Call<CreatePaymentResponse>
+    ): CreatePaymentResponse
 
     @POST("/v1.2.0-beta/tokenized/checkout/execute")
-    fun postPaymentExecute(
+    suspend fun postPaymentExecute(
         @Header("authorization") authorization: String?,
         @Header("x-app-key") xAppKey: String?,
         @Body executePaymentBodyRequest: ExecutePaymentBodyRequest
-    ): Call<ExecutePaymentResponse>
+    ): ExecutePaymentResponse
 
     @POST("/v1.2.0-beta/tokenized/checkout/general/searchTransaction")
-    fun postSearchTransaction(
+    suspend fun postSearchTransaction(
         @Header("authorization") authorization: String?,
         @Header("x-app-key") xAppKey: String?,
         @Body searchTransactionBodyRequest: SearchTransactionBodyRequest
-    ): Call<SearchTransactionResponse>
+    ): SearchTransactionResponse
 
     @POST("/v1.2.0-beta/tokenized/checkout/payment/status")
-    fun postQueryPayment(
+    suspend fun postQueryPayment(
         @Header("authorization") authorization: String?,
         @Header("x-app-key") xAppKey: String?,
         @Body queryPaymentBodyRequest: QueryPaymentBodyRequest
-    ): Call<QueryPaymentResponse>
+    ): QueryPaymentResponse
 }

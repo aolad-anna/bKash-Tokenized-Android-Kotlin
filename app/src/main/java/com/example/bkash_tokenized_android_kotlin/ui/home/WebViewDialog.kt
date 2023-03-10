@@ -1,22 +1,28 @@
 package com.example.bkash_tokenized_android_kotlin.ui.home
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.bkash_tokenized_android_kotlin.Constants
 import com.example.bkash_tokenized_android_kotlin.R
 
-class WebViewFragment : DialogFragment() {
+class WebViewDialog : DialogFragment() {
+    var alert: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(
@@ -24,9 +30,7 @@ class WebViewFragment : DialogFragment() {
             R.style.FullScreenDialogStyle
         )
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?, ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_web_view, container, false)
     }
 
@@ -35,7 +39,6 @@ class WebViewFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val HtmlUrl = arguments?.getString("bKashUrl")
-        val paymentID = arguments?.getString("paymentID")
 
         val myWebView = getView()?.findViewById<WebView>(R.id.WebView)
         val progressBar = getView()?.findViewById<ProgressBar>(R.id.progressbar)
@@ -69,11 +72,41 @@ class WebViewFragment : DialogFragment() {
                     dialog?.dismiss()
                 }
                 else if(url.toString().contains("status=failure")){
-                    Toast.makeText(requireContext(), "Payment Failure!! \n Try Again!!", Toast.LENGTH_SHORT).show()
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext(), R.style.DialogStyle).apply {
+                        setTitle("Payment Failure!!")
+                        setCancelable(false)
+                        setPositiveButton("Try Again") { _, _ ->
+                            try {
+                                alert?.dismiss()
+                            }
+                            catch (e: ActivityNotFoundException) {
+                                throw e
+                            }
+                        }
+                    }
+                    alert = builder.create()
+                    alert?.show()
+                    val updateButton: Button? = alert?.getButton(DialogInterface.BUTTON_POSITIVE)
+                    updateButton?.setTextColor(Color.parseColor("#E91E63"))
                     dialog?.dismiss()
                 }
                 else if(url.toString().contains("status=cancel")){
-                    Toast.makeText(requireContext(), "Payment Canceled!!", Toast.LENGTH_SHORT).show()
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext(), R.style.DialogStyle).apply {
+                        setTitle("Payment Canceled!!")
+                        setCancelable(false)
+                        setPositiveButton("Okay") { _, _ ->
+                            try {
+                                alert?.dismiss()
+                            }
+                            catch (e: ActivityNotFoundException) {
+                                throw e
+                            }
+                        }
+                    }
+                    alert = builder.create()
+                    alert?.show()
+                    val updateButton: Button? = alert?.getButton(DialogInterface.BUTTON_POSITIVE)
+                    updateButton?.setTextColor(Color.parseColor("#E91E63"))
                     dialog?.dismiss()
                 }
             }

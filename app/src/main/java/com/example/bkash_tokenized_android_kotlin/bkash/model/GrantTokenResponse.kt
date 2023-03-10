@@ -1,4 +1,4 @@
-package com.example.bkash_tokenized_rnd.bkash.model
+package com.example.bkash_tokenized_android_kotlin.bkash.model
 
 import com.google.gson.annotations.SerializedName
 

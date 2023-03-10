@@ -4,19 +4,23 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.bkash_tokenized_android_kotlin.Constants
 import com.example.bkash_tokenized_android_kotlin.R
 import com.example.bkash_tokenized_android_kotlin.bkash.api.ApiInterface
 import com.example.bkash_tokenized_android_kotlin.bkash.api.BkashApiClient
 import com.example.bkash_tokenized_android_kotlin.bkash.model.CreatePaymentBodyRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.GrantTokenBodyRequest
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentHomeBinding
 import com.example.bkash_tokenized_rnd.bkash.model.*
 import retrofit2.Call
@@ -24,10 +28,12 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
+
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private val viewModel by viewModels<HomeViewModel>()
     private var pd: ProgressDialog?= null
 
     companion object {
@@ -69,142 +75,90 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun grantBkashToken() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<GrantTokenResponse> = apiService.postGrantToken(
-            username = Constants.bkashSandboxUsername,
-            password = Constants.bkashSandboxPassword,
-            GrantTokenBodyRequest(
-                appKey = Constants.bkashSandboxAppKey,
-                appSecret = Constants.bkashSandboxAppSecret
-            )
-        )
-        call.enqueue(object : Callback<GrantTokenResponse> {
-            override fun onResponse(call: Call<GrantTokenResponse>, response: Response<GrantTokenResponse>) {
-                if (response.isSuccessful) {
-                    if (response.body()?.statusCode == "0000"){
-                        Constants.sessionIdToken = response.body()?.idToken.toString()
-                        createBkashPayment()
-                        pd!!.dismiss()
-                        binding.bKashButton.visibility = View.VISIBLE
-                    }
-                    else{
-                        Toast.makeText(requireContext(), response.body()?.statusMessage, Toast.LENGTH_SHORT).show()
-                        pd!!.dismiss()
-                    }
-                }
-            }
 
-            override fun onFailure(call: Call<GrantTokenResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
-                binding.bKashButton.visibility = View.VISIBLE
+    private fun grantBkashToken() {
+        viewModel.getGrantTokenObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                Constants.sessionIdToken = it.idToken.toString()
+                if (it.statusCode != "0000") {
+                    pd!!.dismiss()
+                    Toast.makeText(activity, it.statusMessage, Toast.LENGTH_SHORT).show()
+                }
+                createBkashPayment()
                 pd!!.dismiss()
             }
-        })
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
+                pd!!.dismiss()
+            }
+        }
+        viewModel.grantTokenApiCall()
     }
 
     private fun createBkashPayment() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<CreatePaymentResponse> = apiService.postPaymentCreate(
-            authorization = "Bearer ${Constants.sessionIdToken}",
-            xAppKey = Constants.bkashSandboxAppKey,
-            CreatePaymentBodyRequest(
-                mode = Constants.mode,
-                payerReference = Constants.payerReference,
-                callbackURL = Constants.callbackURL,
-                merchantAssociationInfo = Constants.merchantAssociationInfo,
-                amount = Constants.amount,
-                currency = Constants.currency,
-                intent = Constants.intents,
-                merchantInvoiceNumber = Constants.merchantInvoiceNumber,
-            )
-        )
-        call.enqueue(object : Callback<CreatePaymentResponse> {
-            @SuppressLint("RestrictedApi")
-            override fun onResponse(call: Call<CreatePaymentResponse>, response: Response<CreatePaymentResponse>) {
-                if (response.isSuccessful) {
-                    Constants.paymentIDBkash = response.body()?.paymentID.toString()
+        viewModel.getCreatePaymentObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                if (it.statusCode != "0000") {
                     pd!!.dismiss()
+                    Toast.makeText(activity, it.statusMessage, Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Constants.paymentIDBkash = it.paymentID.toString()
                     val args = Bundle().apply {
-                        putString("bKashUrl", response.body()?.bkashURL.toString())
-                        putString("paymentID", response.body()?.paymentID.toString())
+                        putString("bKashUrl", it.bkashURL.toString())
+                        putString("paymentID", it.paymentID.toString())
                     }
+                    pd!!.dismiss()
                     findNavController().navigate(R.id.webViewDialog, args)
                 }
             }
-
-            override fun onFailure(call: Call<CreatePaymentResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
-                binding.bKashButton.visibility = View.VISIBLE
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
                 pd!!.dismiss()
             }
-        })
+        }
+        viewModel.createPaymentApiCall()
     }
 
     private fun executeBkashPayment() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<ExecutePaymentResponse> = apiService.postPaymentExecute(
-            authorization = "Bearer ${Constants.sessionIdToken}",
-            xAppKey = Constants.bkashSandboxAppKey,
-            ExecutePaymentBodyRequest(
-                paymentID = Constants.paymentIDBkash
-            )
-        )
-        call.enqueue(object : Callback<ExecutePaymentResponse> {
-            override fun onResponse(call: Call<ExecutePaymentResponse>, response: Response<ExecutePaymentResponse>) {
-                if (response.isSuccessful) {
-                    pd?.dismiss()
+        viewModel.getExecutePaymentObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                pd?.dismiss()
                     val args = Bundle().apply {
-                        putString("statusMessage", response.body()?.statusMessage)
-                        putString("trxID", response.body()?.trxID)
-                        putString("statusCode", response.body()?.statusCode)
+                        putString("statusMessage", it.statusMessage)
+                        putString("trxID", it.trxID)
+                        putString("statusCode", it.statusCode)
                     }
                     findNavController().navigate(R.id.bottomSheetDialog, args)
-                }
-                else if (response.body() == null){
-                    pd?.dismiss()
-                    queryBkashPayment()
-                }
             }
-
-            override fun onFailure(call: Call<ExecutePaymentResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
-                pd?.dismiss()
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
                 queryBkashPayment()
             }
-        })
+        }
+        viewModel.executePaymentApiCall()
     }
 
     private fun queryBkashPayment() {
-        val apiService = BkashApiClient.client!!.create(ApiInterface::class.java)
-        val call: Call<QueryPaymentResponse> = apiService.postQueryPayment(
-            authorization = "Bearer ${Constants.sessionIdToken}",
-            xAppKey = Constants.bkashSandboxAppKey,
-            QueryPaymentBodyRequest(
-                paymentID = Constants.paymentIDBkash
-            )
-        )
-        call.enqueue(object : Callback<QueryPaymentResponse> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(call: Call<QueryPaymentResponse>, response: Response<QueryPaymentResponse>) {
-                if (response.isSuccessful) {
-                    if (response.body()?.transactionStatus == "Initiated"){
+        viewModel.getQueryPaymentObserver().observe(viewLifecycleOwner) {
+            if (it != null) {
+                pd?.dismiss()
+                if (it.transactionStatus == "Initiated"){
                         grantBkashToken()
                     }
-                    else if (response.body()?.transactionStatus == "Completed"){
-                        val args = Bundle().apply {
-                            putString("statusMessage", response.body()?.statusMessage)
-                            putString("statusCode", response.body()?.statusCode)
-                        }
-                        findNavController().navigate(R.id.bottomSheetDialog, args)
+                else if (it.transactionStatus == "Completed"){
+                    val args = Bundle().apply {
+                        putString("statusMessage", it.statusMessage)
+                        putString("statusCode", it.statusCode)
                     }
+                    findNavController().navigate(R.id.bottomSheetDialog, args)
                 }
             }
-
-            override fun onFailure(call: Call<QueryPaymentResponse>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something Went To Wrong", Toast.LENGTH_SHORT).show()
+            else {
+                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+        viewModel.queryPaymentApiCall()
     }
 
     private fun hideKeyboard(){
@@ -216,5 +170,4 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

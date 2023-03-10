@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object BkashApiClient {
     private const val BKASH_BASE_URL = "https://tokenized.sandbox.bka.sh"
 //   private const val BKASH_BASE_URL = "https://checkout.pay.bka.sh/"
-    var loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private var loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
     private var okHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)

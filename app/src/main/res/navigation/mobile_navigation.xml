@@ -19,7 +19,7 @@
 
     <dialog
         android:id="@+id/webViewDialog"
-        android:name="com.example.bkash_tokenized_android_kotlin.ui.home.WebViewFragment"
+        android:name="com.example.bkash_tokenized_android_kotlin.ui.home.WebViewDialog"
         tools:layout="@layout/fragment_web_view"/>
 
     <dialog
