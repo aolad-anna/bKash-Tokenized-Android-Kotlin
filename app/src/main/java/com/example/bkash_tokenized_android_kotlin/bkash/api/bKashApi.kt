@@ -1,7 +1,6 @@
 package com.example.bkash_tokenized_android_kotlin.bkash.api
 
 import com.example.bkash_tokenized_android_kotlin.bkash.model.*
-import com.example.bkash_tokenized_rnd.bkash.model.*
 import retrofit2.http.*
 
 
