@@ -1,26 +1,33 @@
-package com.example.bkash_tokenized_android_kotlin.ui.home
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bkash_tokenized_android_kotlin.Constants
-import com.example.bkash_tokenized_android_kotlin.Constants.amount
-import com.example.bkash_tokenized_android_kotlin.Constants.bkashSandboxAppKey
-import com.example.bkash_tokenized_android_kotlin.Constants.bkashSandboxAppSecret
-import com.example.bkash_tokenized_android_kotlin.Constants.bkashSandboxPassword
-import com.example.bkash_tokenized_android_kotlin.Constants.bkashSandboxUsername
-import com.example.bkash_tokenized_android_kotlin.Constants.callbackURL
-import com.example.bkash_tokenized_android_kotlin.Constants.currency
-import com.example.bkash_tokenized_android_kotlin.Constants.intents
-import com.example.bkash_tokenized_android_kotlin.Constants.merchantAssociationInfo
-import com.example.bkash_tokenized_android_kotlin.Constants.merchantInvoiceNumber
-import com.example.bkash_tokenized_android_kotlin.Constants.mode
-import com.example.bkash_tokenized_android_kotlin.Constants.payerReference
-import com.example.bkash_tokenized_android_kotlin.Constants.paymentIDBkash
-import com.example.bkash_tokenized_android_kotlin.Constants.sessionIdToken
-import com.example.bkash_tokenized_android_kotlin.SingleLiveEvent
-import com.example.bkash_tokenized_android_kotlin.bkash.api.ApiInterface
-import com.example.bkash_tokenized_android_kotlin.bkash.api.BkashApiClient
-import com.example.bkash_tokenized_android_kotlin.bkash.model.*
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.amount
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.bkashSandboxAppKey
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.bkashSandboxAppSecret
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.bkashSandboxPassword
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.bkashSandboxUsername
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.callbackURL
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.currency
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.intents
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.merchantAssociationInfo
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.merchantInvoiceNumber
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.mode
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.payerReference
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.paymentIDBkash
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.sessionIdToken
+import com.example.bkash_tokenized_android_kotlin.bkash.SingleLiveEvent
+import com.example.bkash_tokenized_android_kotlin.bkash.network.ApiInterface
+import com.example.bkash_tokenized_android_kotlin.bkash.network.BkashApiClient
+import com.example.bkash_tokenized_android_kotlin.bkash.model.request.CreatePaymentRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.request.ExecutePaymentRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.request.GrantTokenRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.request.QueryPaymentRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.response.CreatePaymentResponse
+import com.example.bkash_tokenized_android_kotlin.bkash.model.response.ExecutePaymentResponse
+import com.example.bkash_tokenized_android_kotlin.bkash.model.response.GrantTokenResponse
+import com.example.bkash_tokenized_android_kotlin.bkash.model.response.QueryPaymentResponse
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,7 +57,7 @@ class HomeViewModel : ViewModel() {
             val response  = bkashApiClient?.postGrantToken(
                 username = bkashSandboxUsername,
                 password = bkashSandboxPassword,
-                GrantTokenBodyRequest(
+                GrantTokenRequest(
                     appKey = bkashSandboxAppKey,
                     appSecret = bkashSandboxAppSecret
                 )
@@ -65,7 +72,7 @@ class HomeViewModel : ViewModel() {
             val response  = bkashApiClient?.postPaymentCreate(
                 authorization = "Bearer $sessionIdToken",
                 xAppKey = bkashSandboxAppKey,
-                CreatePaymentBodyRequest(
+                CreatePaymentRequest(
                     mode = mode,
                     payerReference = payerReference,
                     callbackURL = callbackURL,
@@ -86,7 +93,7 @@ class HomeViewModel : ViewModel() {
             val response  = bkashApiClient?.postPaymentExecute(
                 authorization = "Bearer $sessionIdToken",
                 xAppKey = bkashSandboxAppKey,
-                ExecutePaymentBodyRequest(
+                ExecutePaymentRequest(
                     paymentID = paymentIDBkash
                 )
             )
@@ -100,7 +107,7 @@ class HomeViewModel : ViewModel() {
             val response  = bkashApiClient?.postQueryPayment(
                 authorization = "Bearer $sessionIdToken",
                 xAppKey = bkashSandboxAppKey,
-                QueryPaymentBodyRequest(
+                QueryPaymentRequest(
                     paymentID = paymentIDBkash
                 )
             )

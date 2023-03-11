@@ -1,4 +1,4 @@
-package com.example.bkash_tokenized_android_kotlin.ui.home
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.home
 
 import android.app.Dialog
 import android.os.Bundle

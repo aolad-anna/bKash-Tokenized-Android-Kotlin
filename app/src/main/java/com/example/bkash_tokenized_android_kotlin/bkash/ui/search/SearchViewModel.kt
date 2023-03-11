@@ -1,15 +1,13 @@
-package com.example.bkash_tokenized_android_kotlin.ui.search
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.search
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bkash_tokenized_android_kotlin.Constants
-import com.example.bkash_tokenized_android_kotlin.SingleLiveEvent
-import com.example.bkash_tokenized_android_kotlin.bkash.api.ApiInterface
-import com.example.bkash_tokenized_android_kotlin.bkash.api.BkashApiClient
-import com.example.bkash_tokenized_android_kotlin.bkash.model.QueryPaymentResponse
-import com.example.bkash_tokenized_android_kotlin.bkash.model.SearchTransactionBodyRequest
-import com.example.bkash_tokenized_android_kotlin.bkash.model.SearchTransactionResponse
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants
+import com.example.bkash_tokenized_android_kotlin.bkash.SingleLiveEvent
+import com.example.bkash_tokenized_android_kotlin.bkash.network.ApiInterface
+import com.example.bkash_tokenized_android_kotlin.bkash.network.BkashApiClient
+import com.example.bkash_tokenized_android_kotlin.bkash.model.request.SearchTransactionRequest
+import com.example.bkash_tokenized_android_kotlin.bkash.model.response.SearchTransactionResponse
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,7 +25,7 @@ class SearchViewModel : ViewModel() {
             val response  = bkashApiClient?.postSearchTransaction(
                 authorization = "Bearer ${Constants.sessionIdToken}",
                 xAppKey = Constants.bkashSandboxAppKey,
-                SearchTransactionBodyRequest(
+                SearchTransactionRequest(
                     trxID = Constants.searchTextInput
                 )
             )

@@ -1,4 +1,4 @@
-package com.example.bkash_tokenized_android_kotlin.bkash.api
+package com.example.bkash_tokenized_android_kotlin.bkash.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

@@ -1,4 +1,4 @@
-package com.example.bkash_tokenized_android_kotlin.ui.search
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.search
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -10,12 +10,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.bkash_tokenized_android_kotlin.Constants
-import com.example.bkash_tokenized_android_kotlin.Constants.pd
-import com.example.bkash_tokenized_android_kotlin.Constants.searchTextInput
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.pd
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.searchTextInput
 import com.example.bkash_tokenized_android_kotlin.R
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentSearchBinding
-import com.example.bkash_tokenized_android_kotlin.ui.home.HomeViewModel
+import com.example.bkash_tokenized_android_kotlin.bkash.ui.home.HomeViewModel
 
 class SearchFragment : Fragment() {
 

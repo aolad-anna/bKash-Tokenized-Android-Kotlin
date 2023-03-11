@@ -1,10 +1,9 @@
-package com.example.bkash_tokenized_android_kotlin.ui.home
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.home
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -16,9 +15,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.example.bkash_tokenized_android_kotlin.Constants
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants
 import com.example.bkash_tokenized_android_kotlin.R
 
 class WebViewDialog : DialogFragment() {

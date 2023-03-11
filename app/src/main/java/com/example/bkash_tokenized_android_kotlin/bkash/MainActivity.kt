@@ -1,12 +1,12 @@
-package com.example.bkash_tokenized_android_kotlin
+package com.example.bkash_tokenized_android_kotlin.bkash
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.bkash_tokenized_android_kotlin.R
 import com.example.bkash_tokenized_android_kotlin.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

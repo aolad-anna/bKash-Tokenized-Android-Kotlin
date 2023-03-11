@@ -1,4 +1,4 @@
-package com.example.bkash_tokenized_android_kotlin.ui.home
+package com.example.bkash_tokenized_android_kotlin.bkash.ui.home
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -13,12 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.example.bkash_tokenized_android_kotlin.Constants.amount
-import com.example.bkash_tokenized_android_kotlin.Constants.liveData
-import com.example.bkash_tokenized_android_kotlin.Constants.paymentIDBkash
-import com.example.bkash_tokenized_android_kotlin.Constants.pd
-import com.example.bkash_tokenized_android_kotlin.Constants.sessionIdToken
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.amount
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.liveData
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.paymentIDBkash
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.pd
+import com.example.bkash_tokenized_android_kotlin.bkash.Constants.sessionIdToken
 import com.example.bkash_tokenized_android_kotlin.R
+import com.example.bkash_tokenized_android_kotlin.bkash.network.InternetConnection
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentHomeBinding
 
 
@@ -38,19 +39,26 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.bKashButton.safeClick({
-            if (binding.textView2.text.isNotEmpty()) {
-                amount = binding.textView2.text.toString()
-                binding.textView2.setText("")
-                pd = ProgressDialog(requireContext(), R.style.DialogStyle)
-                pd?.setMessage("Processing")
-                pd?.setCancelable(false)
-                pd!!.show()
-                hideKeyboard()
-                grantBkashToken()
-            } else
-                Toast.makeText(requireContext(), "Please Enter Valid Amount!!", Toast.LENGTH_SHORT).show()
-        })
+
+            binding.bKashButton.safeClick({
+                if (InternetConnection.isOnline(requireActivity())){
+                    if (binding.textView2.text.isNotEmpty()) {
+                        amount = binding.textView2.text.toString()
+                        binding.textView2.setText("")
+                        pd = ProgressDialog(requireContext(), R.style.DialogStyle)
+                        pd?.setMessage("Processing")
+                        pd?.setCancelable(false)
+                        pd!!.show()
+                        hideKeyboard()
+                        grantBkashToken()
+                    } else{
+                        Toast.makeText(requireContext(), "Please Enter Valid Amount!!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    Toast.makeText(requireContext(), "No internet or data connection!", Toast.LENGTH_SHORT).show()
+                }
+            })
 
         liveData.value = false
         liveData.observe(requireActivity()){
