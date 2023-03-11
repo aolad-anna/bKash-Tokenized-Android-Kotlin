@@ -1,5 +1,6 @@
 package com.example.bkash_tokenized_android_kotlin
 
+import android.app.ProgressDialog
 import androidx.lifecycle.MutableLiveData
 
 object Constants {
@@ -19,5 +20,6 @@ object Constants {
     var sessionIdToken = ""
     var paymentIDBkash = ""
     var searchTextInput = ""
+    var pd: ProgressDialog?= null
     val liveData = MutableLiveData<Boolean>()
 }

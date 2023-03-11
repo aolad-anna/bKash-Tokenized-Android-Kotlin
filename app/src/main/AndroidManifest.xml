@@ -11,6 +11,7 @@
         android:icon="@drawable/bkash"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         android:windowSoftInputMode="adjustResize"
         android:theme="@style/Theme.BKashTokenizedRnD"
         tools:targetApi="31">

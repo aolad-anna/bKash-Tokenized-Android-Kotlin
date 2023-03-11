@@ -56,8 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="#E91E63"
+            android:clickable="true"
             android:text="Pay With bKash"
             android:textColor="@color/white"
-            android:visibility="visible" />
+            android:focusable="true" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

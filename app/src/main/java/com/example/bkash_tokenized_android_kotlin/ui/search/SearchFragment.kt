@@ -11,6 +11,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.bkash_tokenized_android_kotlin.Constants
+import com.example.bkash_tokenized_android_kotlin.Constants.pd
 import com.example.bkash_tokenized_android_kotlin.Constants.searchTextInput
 import com.example.bkash_tokenized_android_kotlin.R
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentSearchBinding
@@ -22,8 +23,6 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel by viewModels<HomeViewModel>()
     private val searchViewModel by viewModels<SearchViewModel>()
-    private var pd: ProgressDialog?= null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
