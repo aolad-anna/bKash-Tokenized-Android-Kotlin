@@ -14,6 +14,7 @@ import com.example.bkash_tokenized_android_kotlin.bkash.Constants
 import com.example.bkash_tokenized_android_kotlin.bkash.Constants.pd
 import com.example.bkash_tokenized_android_kotlin.bkash.Constants.searchTextInput
 import com.example.bkash_tokenized_android_kotlin.R
+import com.example.bkash_tokenized_android_kotlin.bkash.network.InternetConnection
 import com.example.bkash_tokenized_android_kotlin.databinding.FragmentSearchBinding
 import com.example.bkash_tokenized_android_kotlin.bkash.ui.home.HomeViewModel
 
@@ -36,17 +37,20 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.searchBtn.setOnClickListener {
-            if (binding.textView2Search.text.isNotEmpty()){
-                searchTextInput = binding.textView2Search.text.toString()
-                hideKeyboard()
-                pd = ProgressDialog(requireContext(), R.style.DialogStyle)
-                pd?.setMessage("Searching")
-                pd?.setCancelable(false)
-                pd!!.show()
-                grantBkashToken()
+            if(InternetConnection.isOnline(requireActivity())){
+                if (binding.textView2Search.text.isNotEmpty()){
+                    searchTextInput = binding.textView2Search.text.toString()
+                    hideKeyboard()
+                    pd = ProgressDialog(requireContext(), R.style.DialogStyle)
+                    pd?.setMessage("Searching")
+                    pd?.setCancelable(false)
+                    pd!!.show()
+                    grantBkashToken()
+                }
+                else{
+                    Toast.makeText(requireContext(), "Please Enter Valid TrxId!!", Toast.LENGTH_SHORT).show()
+                }
             }
-            else
-                Toast.makeText(requireContext(), "Please Enter Valid TrxId!!", Toast.LENGTH_SHORT).show()
         }
     }
 
